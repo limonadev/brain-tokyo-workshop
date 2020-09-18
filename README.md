@@ -1,3 +1,5 @@
+# THIS REPO WAS FORKED FROM [HERE](https://github.com/google/brain-tokyo-workshop/). THIS IS NOT MY ORIGINAL WORK. THE SEPARATION FROM THE ORIGINAL REPO WAS DONE WITH RESEARCH PURPOSES.
+
 # Brain Tokyo Workshop 🧠🗼
 
 This repo contains research materials released by members of the Google Brain team in Tokyo.
