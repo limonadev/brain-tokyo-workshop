@@ -42,7 +42,8 @@ class Wann():
 
   ''' Subfunctions '''
   from ._variation import evolvePop, recombine, crossover,\
-                          mutAddNode, mutAddConn, topoMutate
+                          mutAddNode, mutAddConn, mutDelNode,\
+                          topoMutate
   from ._speciate  import Species, speciate # Population container
 
 

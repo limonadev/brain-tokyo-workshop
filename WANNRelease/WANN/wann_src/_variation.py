@@ -293,6 +293,49 @@ def mutAddConn(self, connG, nodeG, innov, gen):
 
   return connG, innov
 
+def mutDelNode(self, connG, nodeG, innov, gen):
+  #print('Disque borre un nodo')
+  hiddenIndexes = np.where(nodeG[1,:] == 3)[0]
+  #print(hiddenIndexes)
+  if len(hiddenIndexes) == 0:
+    return connG, nodeG, innov
+
+  #print(nodeG)
+  indexToDelete = np.random.choice(hiddenIndexes)
+  #print(indexToDelete)
+  nodeToDelete = nodeG[:,indexToDelete]
+  #print(nodeToDelete)
+  #print('Output Conn')
+  outputConnIndexes = np.where(connG[1,:] == nodeToDelete[0])[0]
+  #print(outputConnIndexes)
+  #for i in outputConnIndexes:
+  #  connO = connG[:,i]
+  #  print(connG[:,i])
+  #print('Input Conn')
+  inputConnIndexes = np.where(connG[2,:] == nodeToDelete[0])[0]
+  
+  lol = np.delete(nodeG, indexToDelete, 1)
+  print('LOLOLOLOLOL')
+  print(nodeG)
+  print(lol)
+  print(nodeG.shape, lol.shape)
+
+  connIndexes = np.concatenate((outputConnIndexes, inputConnIndexes))
+  kappa = np.delete(connG, connIndexes, 1)
+  print(outputConnIndexes, inputConnIndexes, connIndexes)
+  print(connG)
+  print(kappa)
+  print(connG.shape, kappa.shape)
+  #kappa = np.delete()
+
+
+  #print(inputConnIndexes)
+  #for i in inputConnIndexes:
+  #  connO = connG[:,i]
+  #  print(connG[:,i])
+  
+  #print(connG)
+  return kappa, lol, innov
 
 # -- 'Single Weight Network' topological mutation ------------------------ -- #
 
@@ -336,7 +379,8 @@ def topoMutate(self,child,innov,gen):
 
   # Choose topological mutation
   topoRoulette = np.array((p['prob_addConn'], p['prob_addNode'], \
-                           p['prob_enable'] , p['prob_mutAct']))
+                           p['prob_enable'] , p['prob_mutAct'], \
+                           p['prob_delNode']))
 
   spin = np.random.rand()*np.sum(topoRoulette)
   slot = topoRoulette[0]
@@ -371,6 +415,10 @@ def topoMutate(self,child,innov,gen):
       mutNode = np.random.randint(start,end)
       newActPool = listXor([int(nodeG[2,mutNode])], list(p['ann_actRange']))
       nodeG[2,mutNode] = int(newActPool[np.random.randint(len(newActPool))])
+
+  # Delete Node
+  elif choice is 5:
+    connG, nodeG, innov = self.mutDelNode(connG, nodeG, innov, gen)
 
   child.conn = connG
   child.node = nodeG

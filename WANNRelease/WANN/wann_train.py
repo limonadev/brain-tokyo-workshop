@@ -24,9 +24,13 @@ def master():
   data = DataGatherer(fileName, hyp)
   wann = Wann(hyp)
 
-  for gen in range(hyp['maxGen']):        
+  for gen in range(hyp['maxGen']):   
+    print('ask')     
     pop = wann.ask()            # Get newly evolved individuals from WANN  
+    print('end ask')
+    print('eval')
     reward = batchMpiEval(pop)  # Send pop to evaluate
+    print('end eval')
     wann.tell(reward)           # Send fitness to WANN    
 
     data = gatherData(data,wann,gen,hyp)
