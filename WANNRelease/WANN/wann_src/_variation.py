@@ -294,48 +294,56 @@ def mutAddConn(self, connG, nodeG, innov, gen):
   return connG, innov
 
 def mutDelNode(self, connG, nodeG, innov, gen):
-  #print('Disque borre un nodo')
+  print('I deleted a node')
   hiddenIndexes = np.where(nodeG[1,:] == 3)[0]
-  #print(hiddenIndexes)
+
   if len(hiddenIndexes) == 0:
     return connG, nodeG, innov
 
-  #print(nodeG)
   indexToDelete = np.random.choice(hiddenIndexes)
-  #print(indexToDelete)
   nodeToDelete = nodeG[:,indexToDelete]
-  #print(nodeToDelete)
-  #print('Output Conn')
+
   outputConnIndexes = np.where(connG[1,:] == nodeToDelete[0])[0]
-  #print(outputConnIndexes)
-  #for i in outputConnIndexes:
-  #  connO = connG[:,i]
-  #  print(connG[:,i])
-  #print('Input Conn')
   inputConnIndexes = np.where(connG[2,:] == nodeToDelete[0])[0]
   
-  lol = np.delete(nodeG, indexToDelete, 1)
-  print('LOLOLOLOLOL')
+  updatedNodeG = np.delete(nodeG, indexToDelete, 1)
+  '''print('LOLOLOLOLOL')
   print(nodeG)
-  print(lol)
-  print(nodeG.shape, lol.shape)
+  print(updatedNodeG)
+  print(nodeG.shape, updatedNodeG.shape)'''
 
   connIndexes = np.concatenate((outputConnIndexes, inputConnIndexes))
-  kappa = np.delete(connG, connIndexes, 1)
-  print(outputConnIndexes, inputConnIndexes, connIndexes)
+  updatedConnG = np.delete(connG, connIndexes, 1)
+  '''print(outputConnIndexes, inputConnIndexes, connIndexes)
   print(connG)
-  print(kappa)
-  print(connG.shape, kappa.shape)
-  #kappa = np.delete()
+  print(updatedConnG)
+  print(connG.shape, updatedConnG.shape)'''
 
+  for sourceIndex in inputConnIndexes:
+    sourceNodeId = connG[:,sourceIndex][1]
+    #print('SOURCE NODE CONN: ', connG[:,sourceIndex])
+    otherDestinies = np.where(updatedConnG[1,:] == sourceNodeId)[0]
+    if len(otherDestinies) != 0:
+      continue
+    for destinyIndex in outputConnIndexes:
+      destinyNodeId = connG[:,destinyIndex][2]
+      #print('DESTINY NODE CONN: ', connG[:,destinyIndex])
+      connNew = np.empty((5,1))
+      connNew[0] = innov[0,-1]+1 # Increment innovation counter
+      connNew[1] = sourceNodeId
+      connNew[2] = destinyNodeId
+      connNew[3] = 1
+      connNew[4] = 1 if connG[:,sourceIndex][4] == 1 and connG[:,destinyIndex][4] == 1 else 0
+      updatedConnG = np.c_[updatedConnG,connNew]
 
-  #print(inputConnIndexes)
-  #for i in inputConnIndexes:
-  #  connO = connG[:,i]
-  #  print(connG[:,i])
-  
-  #print(connG)
-  return kappa, lol, innov
+      # Record innovation
+      newInnov = np.hstack((connNew[0:3].flatten(), -1, gen))
+      innov = np.hstack((innov,newInnov[:,None]))
+
+  '''print('HERE ARE THE RESULTS')
+  print(updatedConnG)
+  print(updatedNodeG)'''
+  return updatedConnG, updatedNodeG, innov
 
 # -- 'Single Weight Network' topological mutation ------------------------ -- #
 
