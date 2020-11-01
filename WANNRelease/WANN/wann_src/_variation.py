@@ -129,6 +129,15 @@ def crossover(self,parentA, parentB):
   
   return child
 
+
+def horizontalCrossover(self, parentA, parentB, innov):
+  pass
+
+
+def verticalCrossover(self, parentA, parentB, innov):
+  pass
+
+
 def mutAddNode(self, connG, nodeG, innov, gen):
   """Add new node to genome
 
@@ -307,18 +316,9 @@ def mutDelNode(self, connG, nodeG, innov, gen):
   inputConnIndexes = np.where(connG[2,:] == nodeToDelete[0])[0]
   
   updatedNodeG = np.delete(nodeG, indexToDelete, 1)
-  '''print('LOLOLOLOLOL')
-  print(nodeG)
-  print(updatedNodeG)
-  print(nodeG.shape, updatedNodeG.shape)'''
 
   connIndexes = np.concatenate((outputConnIndexes, inputConnIndexes))
   updatedConnG = np.delete(connG, connIndexes, 1)
-  '''print(outputConnIndexes, inputConnIndexes, connIndexes)
-  print(connG)
-  print(updatedConnG)
-  print(connG.shape, updatedConnG.shape)'''
-
   for sourceIndex in inputConnIndexes:
     sourceNodeId = connG[:,sourceIndex][1]
     #print('SOURCE NODE CONN: ', connG[:,sourceIndex])
