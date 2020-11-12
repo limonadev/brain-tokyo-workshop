@@ -156,13 +156,16 @@ def horizontalCrossover(self, parentA, parentB, innov):
     nextConn = connG[:, nextConnIndex]
     nextNodeId = nextConn[2]
 
-    currentNodeIndex = np.where(nodeG[0,:] == nextNodeId)[0]
+    currentNodeIndex = np.where(nodeG[0,:] == nextNodeId)[0][0]
     currentNode = nodeG[:, currentNodeIndex]
 
     currentOutputConnIndexes = np.where(connG[1,:] == currentNode[0])[0]
 
-  print(connG)
-  print(path)
+  if len(path) > 1:
+    print('Horizontal Crossover')
+    print(connG)
+    print(nodeG)
+    print(path)
 
 
 
