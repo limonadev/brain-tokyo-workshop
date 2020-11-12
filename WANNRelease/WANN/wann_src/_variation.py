@@ -79,8 +79,10 @@ def recombine(self, species, innov, gen):
                   pop[parents[0,i]].node)
     else:
       # Crossover
-      child = self.crossover(pop[parents[0,i]], pop[parents[1,i]])
+      #child = self.crossover(pop[parents[0,i]], pop[parents[1,i]])
+      child = self.horizontalCrossover(pop[parents[0,i]], pop[parents[1,i]], innov)
       
+    self.horizontalCrossover(pop[parents[0,i]], pop[parents[1,i]], innov)
     child, innov = self.topoMutate(child,innov,gen)    
 
     child.express()
@@ -131,7 +133,38 @@ def crossover(self,parentA, parentB):
 
 
 def horizontalCrossover(self, parentA, parentB, innov):
-  pass
+  #print('Horizontal Crossover')
+
+  path = []
+
+  nConn = np.shape(parentA.conn)[1]
+  connG = np.copy(parentA.conn)
+  nodeG = np.copy(parentA.node)
+
+  possibleIndexes = np.where(nodeG[1,:] == 1)[0]
+  initialIndex = np.random.choice(possibleIndexes)
+  
+  initialNode = nodeG[:,initialIndex]
+
+  currentNode = initialNode
+  currentOutputConnIndexes = np.where(connG[1,:] == currentNode[0])[0]
+
+  while len(currentOutputConnIndexes) > 0:
+    path.append(currentNode)
+
+    nextConnIndex = np.random.choice(currentOutputConnIndexes)
+    nextConn = connG[:, nextConnIndex]
+    nextNodeId = nextConn[2]
+
+    currentNodeIndex = np.where(nodeG[0,:] == nextNodeId)[0]
+    currentNode = nodeG[:, currentNodeIndex]
+
+    currentOutputConnIndexes = np.where(connG[1,:] == currentNode[0])[0]
+
+  print(connG)
+  print(path)
+
+
 
 
 def verticalCrossover(self, parentA, parentB, innov):
@@ -303,7 +336,7 @@ def mutAddConn(self, connG, nodeG, innov, gen):
   return connG, innov
 
 def mutDelNode(self, connG, nodeG, innov, gen):
-  print('I deleted a node')
+  #print('I deleted a node')
   hiddenIndexes = np.where(nodeG[1,:] == 3)[0]
 
   if len(hiddenIndexes) == 0:
