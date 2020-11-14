@@ -70,7 +70,7 @@ def recombine(self, species, innov, gen):
   parentB = np.random.randint(len(pop),size=(nOffspring,p['select_tournSize']))
   parents = np.vstack( (np.min(parentA,1), np.min(parentB,1) ) )
   parents = np.sort(parents,axis=0) # Higher fitness parent first    
-  
+
   # Breed child population
   for i in range(nOffspring):  
     if np.random.rand() > p['prob_crossover']:
@@ -78,11 +78,15 @@ def recombine(self, species, innov, gen):
       child = Ind(pop[parents[0,i]].conn,\
                   pop[parents[0,i]].node)
     else:
-      # Crossover
+      #Crossover
+      cConn,cNode,innov = self.horizontalCrossover(pop[parents[0,i]], pop[parents[1,i]], innov, gen)
+      child = Ind(cConn, cNode)
       #child = self.crossover(pop[parents[0,i]], pop[parents[1,i]])
-      child = self.horizontalCrossover(pop[parents[0,i]], pop[parents[1,i]], innov)
+      #child = self.horizontalCrossover(pop[parents[0,i]], pop[parents[1,i]], innov, gen)
       
-    self.horizontalCrossover(pop[parents[0,i]], pop[parents[1,i]], innov)
+    #cconn,cnode,cinnov = self.horizontalCrossover(pop[parents[0,i]], pop[parents[1,i]], innov, gen)
+    #kappa = Ind(cconn, cnode)
+
     child, innov = self.topoMutate(child,innov,gen)    
 
     child.express()
@@ -132,10 +136,67 @@ def crossover(self,parentA, parentB):
   return child
 
 
-def horizontalCrossover(self, parentA, parentB, innov):
+def horizontalCrossover(self, parentA, parentB, innov, gen):
   #print('Horizontal Crossover')
 
-  path = []
+  base, addition = np.random.permutation([parentA, parentB])
+
+  path = _getPath(addition)
+
+  if len(path) < 2:
+    return parentA.conn, parentA.node, innov
+
+  print('Horizontal Crossover')
+
+  nConn = np.shape(base.conn)[1]
+  connG = np.copy(base.conn)
+  nodeG = np.copy(base.node)
+
+  possibleIndexes = np.where(nodeG[1,:] == 1)[0]
+  initialIndex = np.random.choice(possibleIndexes)
+  initialNode = nodeG[:,initialIndex]
+
+  prev = initialNode
+
+  for node in path:
+    newNodeId = int(max(innov[2,:])+1)
+    newNode = np.array([[newNodeId, node[1], node[2]]]).T
+
+    nodeG = np.hstack((nodeG, newNode))
+
+    connNew = np.empty((5,1))
+    connNew[0] = innov[0,-1]+1
+    connNew[1] = prev[0]
+    connNew[2] = newNodeId
+    connNew[3] = 1
+    connNew[4] = 1 #TODO: change if the original conn was enabled/disabled
+
+    connG = np.c_[connG, connNew]
+
+    newInnov = np.hstack((connNew[0:3].flatten(), -1, gen))
+    innov = np.hstack((innov,newInnov[:,None]))
+
+    prev = newNode
+
+  possibleIndexes = np.where(nodeG[1,:] == 2)[0]
+  lastIndex = np.random.choice(possibleIndexes)
+  lastNode = nodeG[:,lastIndex]
+
+  connNew = np.empty((5,1))
+  connNew[0] = innov[0,-1]+1
+  connNew[1] = prev[0]
+  connNew[2] = lastNode[0]
+  connNew[3] = 1
+  connNew[4] = 1 #TODO: change if the original conn was enabled/disabled
+
+  connG = np.c_[connG, connNew]
+
+  newInnov = np.hstack((connNew[0:3].flatten(), -1, gen))
+  innov = np.hstack((innov,newInnov[:,None]))
+
+  return connG, nodeG, innov
+
+  '''path = []
 
   nConn = np.shape(parentA.conn)[1]
   connG = np.copy(parentA.conn)
@@ -165,10 +226,37 @@ def horizontalCrossover(self, parentA, parentB, innov):
     print('Horizontal Crossover')
     print(connG)
     print(nodeG)
-    print(path)
+    print(path)'''
 
 
+def _getPath(genome):
+  path = []
 
+  nConn = np.shape(genome.conn)[1]
+  connG = np.copy(genome.conn)
+  nodeG = np.copy(genome.node)
+
+  possibleIndexes = np.where(nodeG[1,:] == 1)[0]
+  initialIndex = np.random.choice(possibleIndexes)
+  
+  initialNode = nodeG[:,initialIndex]
+
+  currentNode = initialNode
+  currentOutputConnIndexes = np.where(connG[1,:] == currentNode[0])[0]
+
+  while len(currentOutputConnIndexes) > 0:
+    path.append(currentNode)
+
+    nextConnIndex = np.random.choice(currentOutputConnIndexes)
+    nextConn = connG[:, nextConnIndex]
+    nextNodeId = nextConn[2]
+
+    currentNodeIndex = np.where(nodeG[0,:] == nextNodeId)[0][0]
+    currentNode = nodeG[:, currentNodeIndex]
+
+    currentOutputConnIndexes = np.where(connG[1,:] == currentNode[0])[0]
+  
+  return path[1:]
 
 def verticalCrossover(self, parentA, parentB, innov):
   pass
@@ -375,7 +463,7 @@ def mutDelNode(self, connG, nodeG, innov, gen):
       # Record innovation
       newInnov = np.hstack((connNew[0:3].flatten(), -1, gen))
       innov = np.hstack((innov,newInnov[:,None]))
-
+  
   '''print('HERE ARE THE RESULTS')
   print(updatedConnG)
   print(updatedNodeG)'''
