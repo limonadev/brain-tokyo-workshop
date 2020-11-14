@@ -24,6 +24,8 @@ def master():
   data = DataGatherer(fileName, hyp)
   wann = Wann(hyp)
 
+  f = open('results.txt', 'w')
+
   for gen in range(hyp['maxGen']):
     pop = wann.ask()            # Get newly evolved individuals from WANN
     reward = batchMpiEval(pop)  # Send pop to evaluate
@@ -31,6 +33,9 @@ def master():
 
     data = gatherData(data,wann,gen,hyp)
     print(gen, '\t - \t', data.display())
+    f.write(str(gen) + ' \t - \t ' + data.display() + '\n')
+
+  f.close()
 
   # Clean up and data gathering at end of run
   data = gatherData(data,wann,gen,hyp,savePop=True)
