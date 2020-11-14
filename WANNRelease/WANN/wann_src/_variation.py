@@ -143,10 +143,8 @@ def horizontalCrossover(self, parentA, parentB, innov, gen):
 
   path = _getPath(addition)
 
-  if len(path) < 2:
+  if len(path) < 3:
     return parentA.conn, parentA.node, innov
-
-  print('Horizontal Crossover')
 
   nConn = np.shape(base.conn)[1]
   connG = np.copy(base.conn)
@@ -430,7 +428,7 @@ def mutDelNode(self, connG, nodeG, innov, gen):
   #print('I deleted a node')
   hiddenIndexes = np.where(nodeG[1,:] == 3)[0]
 
-  if len(hiddenIndexes) == 0:
+  if len(hiddenIndexes) < 3:
     return connG, nodeG, innov
 
   indexToDelete = np.random.choice(hiddenIndexes)
