@@ -2,8 +2,9 @@ timestamp=$( date +%s )
 results="results_${timestamp}"
 
 
-for i in {1..2}
+for i in {1..25}
 do
+    echo $i
     mkdir -p $results/$i
     python wann_train.py -p p/laptop_swing.json -n 15
     cp -r log/ $results/$i/log
