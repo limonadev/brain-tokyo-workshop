@@ -1,9 +1,15 @@
 timestamp=$( date +%s )
-results="results_${timestamp}"
+results="/data/avillena/ademir/results_${timestamp}"
 
+mkdir -p log
+rm -r log
+mkdir -p log
 
 for i in $(seq 1 25)
 do
+    mkdir -p log
+    rm -r log
+    mkdir -p log
     mkdir -p $results/$i
     python wann_train.py -p p/laptop_swing.json -n 10
     cp -r log/ $results/$i/log
