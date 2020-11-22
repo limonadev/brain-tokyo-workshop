@@ -67,7 +67,22 @@ def plot_means(all_means, output_dir, test_name):
     plt.legend(['Elite', 'Best', 'Peak', 'Median'], loc='lower right')
 
     plt.savefig(f'{output_dir}/{test_name}_all.png')
-    #plt.show()
+    plt.clf()
+
+
+def plot_single_mean(mean, output_dir, test_name, mean_name):
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    plt.plot(mean)
+
+    plt.xlabel('Generations')
+    plt.ylabel('Fitness')
+    plt.legend([mean_name], loc='lower right')
+
+    plt.savefig(f'{output_dir}/{test_name}_{mean_name}.png')
+    plt.clf()
+
 
 
 args = sys.argv[1:]
@@ -89,3 +104,7 @@ info_by_gen = get_info_by_gen(results)
 all_means = get_all_means(info_by_gen)
 
 plot_means(all_means, output_dir, test_name)
+plot_single_mean(all_means[1], output_dir, test_name, 'Elite')
+plot_single_mean(all_means[2], output_dir, test_name, 'Best')
+plot_single_mean(all_means[3], output_dir, test_name, 'Peak')
+plot_single_mean(all_means[4], output_dir, test_name, 'Median')
