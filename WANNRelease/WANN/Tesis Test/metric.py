@@ -2,6 +2,17 @@ import os
 import sys
 import matplotlib.pyplot as plt
 
+def find_results(input_dir):
+    results = []
+
+    for folder in [input_dir]:
+        for subdir, dirs, files in os.walk(folder):
+            if 'results.txt' in files:
+                mapped = process_file(f'{subdir}/results.txt')
+                results.append(mapped)
+    
+    return results
+
 def process_file(filename):
     f = open(filename, 'r')
 
@@ -101,19 +112,15 @@ def plot_single_mean_versus(mean_a, mean_b, output_dir, mean_id_a, mean_id_b, me
 
 args = sys.argv[1:]
 
-input_dirs = args[:-2]
-output_dir = args[-2]
-test_name = args[-1]
+input_original_dir = args[0]
+input_modified_dir = args[1]
+output_dir = args[2]
+test_name = args[3]
 
-results = []
+original_results = find_results(input_original_dir)
+modified_results = find_results(input_modified_dir)
 
-for folder in input_dirs:
-    for subdir, dirs, files in os.walk(folder):
-        if 'results.txt' in files:
-            mapped = process_file(f'{subdir}/results.txt')
-            results.append(mapped)
-
-info_by_gen = get_info_by_gen(results)
+info_by_gen = get_info_by_gen(original_results)
 
 all_means = get_all_means(info_by_gen)
 
