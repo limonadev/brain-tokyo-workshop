@@ -1,6 +1,7 @@
 import os
 import sys
 
+
 def process_file(filename):
     f = open(filename, 'r')
 
@@ -32,6 +33,19 @@ def get_info_by_gen(results):
     return gens
 
 
+def get_all_mean(info_by_gen):
+    gen,elite,best,peak,median = [],[],[],[],[]
+    for i,gen_data in enumerate(info_by_gen):
+        e,b,p,m = 0,0,0,0
+        for run in gen_data:
+            e += run['elite']
+
+        gen.append(i)
+        elite.append(e/len(gen_data))
+
+    return gen,elite,best,peak,median
+
+
 args = sys.argv[1:]
 
 input_dirs = args[:-1]
@@ -46,3 +60,5 @@ for folder in input_dirs:
             results.append(mapped)
 
 info_by_gen = get_info_by_gen(results)
+
+all_mean = get_all_mean(info_by_gen)
