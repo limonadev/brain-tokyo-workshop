@@ -22,6 +22,16 @@ def process_file(filename):
     return mapped
 
 
+def get_info_by_gen(results):
+    gens = []
+    for mapped in results:
+        for i,gen_map in enumerate(mapped):
+            if len(gens) == i:
+                gens.append([])
+            gens[i].append(gen_map)
+    return gens
+
+
 args = sys.argv[1:]
 
 input_dirs = args[:-1]
@@ -33,8 +43,6 @@ for folder in input_dirs:
     for subdir, dirs, files in os.walk(folder):
         if 'results.txt' in files:
             mapped = process_file(f'{subdir}/results.txt')
-
             results.append(mapped)
-            
-        #if filename == 'results.txt':
-        #    print('nani')
+
+info_by_gen = get_info_by_gen(results)
