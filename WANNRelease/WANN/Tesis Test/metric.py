@@ -77,7 +77,7 @@ def plot_means(all_means, output_dir, test_name):
     plt.ylabel('Fitness')
     plt.legend(['Elite', 'Best', 'Peak', 'Median'], loc='lower right')
 
-    plt.savefig(f'{output_dir}/{test_name}_all.png')
+    plt.savefig(f'{output_dir}/{test_name.lower()}_all.png')
     plt.clf()
 
 
@@ -91,7 +91,7 @@ def plot_single_mean(mean, output_dir, test_name, mean_name):
     plt.ylabel('Fitness')
     plt.legend([mean_name], loc='lower right')
 
-    plt.savefig(f'{output_dir}/{test_name}_{mean_name}.png')
+    plt.savefig(f'{output_dir}/{test_name.lower()}_{mean_name.lower()}.png')
     plt.clf()
 
 
@@ -106,9 +106,21 @@ def plot_single_mean_versus(mean_a, mean_b, output_dir, mean_id_a, mean_id_b, me
     plt.ylabel('Fitness')
     plt.legend([mean_id_a, mean_id_b], loc='lower right')
 
-    plt.savefig(f'{output_dir}/versus_{mean_name}.png')
+    plt.savefig(f'{output_dir}/versus_{mean_name.lower()}.png')
     plt.clf()
 
+
+def _process_results(input_dir):
+    results = find_results(input_dir)
+    info_by_gen = get_info_by_gen(results)
+    all_means = get_all_means(info_by_gen)
+    return all_means
+
+def _plot_each_single_mean(means, output_dir, test_name):
+    plot_single_mean(means[1], output_dir, test_name, 'Elite')
+    plot_single_mean(means[2], output_dir, test_name, 'Best')
+    plot_single_mean(means[3], output_dir, test_name, 'Peak')
+    plot_single_mean(means[4], output_dir, test_name, 'Median')
 
 args = sys.argv[1:]
 
@@ -117,18 +129,10 @@ input_modified_dir = args[1]
 output_dir = args[2]
 test_name = args[3]
 
-original_results = find_results(input_original_dir)
-modified_results = find_results(input_modified_dir)
+all_modified_means = _process_results(input_modified_dir)
 
-info_by_gen = get_info_by_gen(original_results)
-
-all_means = get_all_means(info_by_gen)
-
-plot_means(all_means, output_dir, test_name)
-plot_single_mean(all_means[1], output_dir, test_name, 'Elite')
-plot_single_mean(all_means[2], output_dir, test_name, 'Best')
-plot_single_mean(all_means[3], output_dir, test_name, 'Peak')
-plot_single_mean(all_means[4], output_dir, test_name, 'Median')
+plot_means(all_modified_means, output_dir, test_name)
+_plot_each_single_mean(all_modified_means, output_dir, test_name)
 
 # This is intended to use when I have the original WANN results vs the modified version
-plot_single_mean_versus(all_means[1], all_means[2], output_dir, 'Modified Elite', 'Original Elite', 'Elite')
+plot_single_mean_versus(all_modified_means[1], all_modified_means[2], output_dir, 'Modified Elite', 'Original Elite', 'Elite')
