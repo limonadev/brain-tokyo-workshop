@@ -84,6 +84,20 @@ def plot_single_mean(mean, output_dir, test_name, mean_name):
     plt.clf()
 
 
+def plot_single_mean_versus(mean_a, mean_b, output_dir, mean_id_a, mean_id_b, mean_name):
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    plt.plot(mean_a)
+    plt.plot(mean_b)
+
+    plt.xlabel('Generations')
+    plt.ylabel('Fitness')
+    plt.legend([mean_id_a, mean_id_b], loc='lower right')
+
+    plt.savefig(f'{output_dir}/versus_{mean_name}.png')
+    plt.clf()
+
 
 args = sys.argv[1:]
 
@@ -108,3 +122,6 @@ plot_single_mean(all_means[1], output_dir, test_name, 'Elite')
 plot_single_mean(all_means[2], output_dir, test_name, 'Best')
 plot_single_mean(all_means[3], output_dir, test_name, 'Peak')
 plot_single_mean(all_means[4], output_dir, test_name, 'Median')
+
+# This is intended to use when I have the original WANN results vs the modified version
+plot_single_mean_versus(all_means[1], all_means[2], output_dir, 'Modified Elite', 'Original Elite', 'Elite')
