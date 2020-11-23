@@ -68,10 +68,10 @@ def plot_means(all_means, output_dir, test_name):
 
     gen,elite,best,peak,median = all_means
 
-    plt.plot(gen, elite)
-    plt.plot(gen, best)
-    plt.plot(gen, peak)
-    plt.plot(gen, median)
+    plt.plot(gen, elite, color='blue')
+    plt.plot(gen, best, color='red')
+    plt.plot(gen, peak, color='green')
+    plt.plot(gen, median, color='orange')
     
     plt.xlabel('Generations')
     plt.ylabel('Fitness')
@@ -81,11 +81,11 @@ def plot_means(all_means, output_dir, test_name):
     plt.clf()
 
 
-def plot_single_mean(mean, output_dir, test_name, mean_name):
+def plot_single_mean(mean, output_dir, test_name, mean_name, color='blue'):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    plt.plot(mean)
+    plt.plot(mean, color=color)
 
     plt.xlabel('Generations')
     plt.ylabel('Fitness')
@@ -117,10 +117,10 @@ def _process_results(input_dir):
     return all_means
 
 def _plot_each_single_mean(means, output_dir, test_name):
-    plot_single_mean(means[1], output_dir, test_name, 'Elite')
-    plot_single_mean(means[2], output_dir, test_name, 'Best')
-    plot_single_mean(means[3], output_dir, test_name, 'Peak')
-    plot_single_mean(means[4], output_dir, test_name, 'Median')
+    plot_single_mean(means[1], output_dir, test_name, 'Elite', color='blue')
+    plot_single_mean(means[2], output_dir, test_name, 'Best', color='red')
+    plot_single_mean(means[3], output_dir, test_name, 'Peak', color='green')
+    plot_single_mean(means[4], output_dir, test_name, 'Median', color='orange')
 
 args = sys.argv[1:]
 
