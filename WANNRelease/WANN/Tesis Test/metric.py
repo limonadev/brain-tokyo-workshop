@@ -144,13 +144,24 @@ input_original_dir = args[0]
 input_modified_dir = args[1]
 output_dir = args[2]
 test_name = args[3]
+original_name = 'original'
 
+all_original_means = _process_results(input_original_dir)
 all_modified_means = _process_results(input_modified_dir)
+
+plot_means(all_original_means, output_dir, original_name)
+_plot_each_single_mean(all_original_means, output_dir, original_name)
 
 plot_means(all_modified_means, output_dir, test_name)
 _plot_each_single_mean(all_modified_means, output_dir, test_name)
 
 # This is intended to use when I have the original WANN results vs the modified version
-plot_single_mean_versus(all_modified_means[1], all_modified_means[2], output_dir, 'Modified Elite', 'Original Elite', 'Elite')
+plot_single_mean_versus(all_original_means[1], all_modified_means[1], output_dir, 'Modified Elite', 'Original Elite', 'Elite')
+plot_single_mean_versus(all_original_means[2], all_modified_means[2], output_dir, 'Modified Best', 'Original Best', 'Best')
+plot_single_mean_versus(all_original_means[3], all_modified_means[3], output_dir, 'Modified Peak', 'Original Peak', 'Peak')
+plot_single_mean_versus(all_original_means[4], all_modified_means[4], output_dir, 'Modified Median', 'Original Median', 'Median')
 
-get_fitness_comparison(all_modified_means[1], all_modified_means[2], output_dir, 'Elite')
+get_fitness_comparison(all_original_means[1], all_modified_means[1], output_dir, 'Elite')
+get_fitness_comparison(all_original_means[2], all_modified_means[2], output_dir, 'Best')
+get_fitness_comparison(all_original_means[3], all_modified_means[3], output_dir, 'Peak')
+get_fitness_comparison(all_original_means[4], all_modified_means[4], output_dir, 'Median')
