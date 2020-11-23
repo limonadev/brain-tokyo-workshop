@@ -110,6 +110,22 @@ def plot_single_mean_versus(mean_a, mean_b, output_dir, mean_id_a, mean_id_b, me
     plt.clf()
 
 
+def get_fitness_comparison(original_mean, modified_mean, output_dir, mean_name):
+    max_fitness_original,max_fitness_modified = max(original_mean), max(modified_mean)
+    last_fitness_original,last_fitness_modified = original_mean[-1], modified_mean[-1]
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    f = open(f'{output_dir}/comparison_{mean_name.lower()}.txt', 'w')
+    f.write(f'Original Max\t\t {max_fitness_original}\n')
+    f.write(f'Modified Max\t\t {max_fitness_modified}\n')
+    f.write('\n\n')
+    f.write(f'Original Last\t\t {last_fitness_original}\n')
+    f.write(f'Modified Last\t\t {last_fitness_modified}\n')
+    f.close()
+
+
 def _process_results(input_dir):
     results = find_results(input_dir)
     info_by_gen = get_info_by_gen(results)
@@ -136,3 +152,5 @@ _plot_each_single_mean(all_modified_means, output_dir, test_name)
 
 # This is intended to use when I have the original WANN results vs the modified version
 plot_single_mean_versus(all_modified_means[1], all_modified_means[2], output_dir, 'Modified Elite', 'Original Elite', 'Elite')
+
+get_fitness_comparison(all_modified_means[1], all_modified_means[2], output_dir, 'Elite')
