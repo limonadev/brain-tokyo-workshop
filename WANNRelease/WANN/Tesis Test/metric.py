@@ -159,11 +159,36 @@ def get_speed_comparison(original_mean, modified_mean, output_dir, mean_name):
 
     f.close()
 
+# Only takes into account the [best] and [peak] member of each run
+def get_best_individual_comparison(original_gens, modified_gens, output_dir):
+    max_best_original,max_peak_original = -1,-1
+    max_best_modified,max_peak_modified = -1,-1
+    for ori_gen, mod_gen in zip(original_gens, modified_gens):
+        for info in ori_gen:
+            if max_best_original < info['best']:
+                max_best_original = info['best']
+            if max_peak_original < info['peak']:
+                max_peak_original = info['peak']
+    
+        for info in mod_gen:
+            if max_best_modified < info['best']:
+                max_best_modified = info['best']
+            if max_peak_modified < info['peak']:
+                max_peak_modified = info['peak']
+    
+    f = open(f'{output_dir}/best_individual_comparison.txt', 'w')
+    f.write(f'Best fitness original:\t\t {max_best_original}\n')
+    f.write(f'Best fitness modified:\t\t {max_best_modified}\n')
+    f.write('\n\n')
+    f.write(f'Peak fitness original:\t\t {max_peak_original}\n')
+    f.write(f'Peak fitness modified:\t\t {max_peak_modified}\n')
+    f.close()
+
 def _process_results(input_dir):
     results = find_results(input_dir)
     info_by_gen = get_info_by_gen(results)
     all_means = get_all_means(info_by_gen)
-    return all_means
+    return info_by_gen, all_means
 
 def _plot_each_single_mean(means, output_dir, test_name):
     plot_single_mean(means[1], output_dir, test_name, 'Elite', color='blue')
@@ -179,8 +204,8 @@ output_dir = args[2]
 test_name = args[3]
 original_name = 'original'
 
-all_original_means = _process_results(input_original_dir)
-all_modified_means = _process_results(input_modified_dir)
+original_gens, all_original_means = _process_results(input_original_dir)
+modified_gens, all_modified_means = _process_results(input_modified_dir)
 
 plot_means(all_original_means, output_dir, original_name)
 _plot_each_single_mean(all_original_means, output_dir, original_name)
@@ -203,3 +228,5 @@ get_speed_comparison(all_original_means[1], all_modified_means[1], output_dir, '
 get_speed_comparison(all_original_means[2], all_modified_means[2], output_dir, 'Best')
 get_speed_comparison(all_original_means[3], all_modified_means[3], output_dir, 'Peak')
 get_speed_comparison(all_original_means[4], all_modified_means[4], output_dir, 'Median')
+
+get_best_individual_comparison(original_gens, modified_gens, output_dir)
