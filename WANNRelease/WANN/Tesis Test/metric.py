@@ -184,6 +184,39 @@ def get_best_individual_comparison(original_gens, modified_gens, output_dir):
     f.write(f'Peak fitness modified:\t\t {max_peak_modified}\n')
     f.close()
 
+def box_plot(original_gens, modified_gens, output_dir):
+    last_original_gen = original_gens[-1]
+    last_modified_gen = modified_gens[-1]
+
+    original_info, modified_info = {},{}
+
+    for execution in last_original_gen:
+        for info in execution:
+            if info not in original_info:
+                original_info[info] = []
+            original_info[info].append(execution[info])
+    
+    for execution in last_modified_gen:
+        for info in execution:
+            if info not in modified_info:
+                modified_info[info] = []
+            modified_info[info].append(execution[info])
+
+    for info in original_info.keys():
+        data = [original_info[info], modified_info[info]]
+    
+        fig1, ax1 = plt.subplots()
+        bp = ax1.boxplot(data, patch_artist = True, notch =True, showfliers=True)
+
+        colors = ['blue', 'orange']
+
+        for patch, color in zip(bp['boxes'], colors):
+            patch.set_facecolor(color)
+
+        plt.savefig(f'{output_dir}/boxplot_{info.lower()}.png')
+        plt.clf()
+
+
 def _process_results(input_dir):
     results = find_results(input_dir)
     info_by_gen = get_info_by_gen(results)
@@ -230,3 +263,5 @@ get_speed_comparison(all_original_means[3], all_modified_means[3], output_dir, '
 get_speed_comparison(all_original_means[4], all_modified_means[4], output_dir, 'Median')
 
 get_best_individual_comparison(original_gens, modified_gens, output_dir)
+
+box_plot(original_gens, modified_gens, output_dir)
