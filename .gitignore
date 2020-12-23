@@ -1,0 +1,5 @@
+*.out
+WANNRelease/WANN/results
+WANNRelease/WANN/results_original
+__pycache__
+statistics
