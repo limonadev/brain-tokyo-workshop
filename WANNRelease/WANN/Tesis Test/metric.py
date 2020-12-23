@@ -46,9 +46,17 @@ def get_info_by_gen(results):
 
 def get_all_means(info_by_gen):
     gen,elite,best,peak,median = [],[],[],[],[]
+
+    max_elite = -1
+    max_peak = -1
+    
     for i,gen_data in enumerate(info_by_gen):
         e,b,p,m = 0,0,0,0
         for run in gen_data:
+            if max_elite < run['elite']:
+                max_elite = run['elite']
+            if max_peak < run['peak']:
+                max_peak = run['peak']
             e += run['elite']
             b += run['best']
             p += run['peak']
@@ -59,7 +67,8 @@ def get_all_means(info_by_gen):
         best.append(b/len(gen_data))
         peak.append(p/len(gen_data))
         median.append(m/len(gen_data))
-
+    
+    print(max_elite, max_peak)
     return [gen,elite,best,peak,median]
 
 def plot_means(all_means, output_dir, test_name):
@@ -125,6 +134,30 @@ def get_fitness_comparison(original_mean, modified_mean, output_dir, mean_name):
     f.write(f'Modified Last\t\t {last_fitness_modified}\n')
     f.close()
 
+def get_speed_comparison(original_mean, modified_mean, output_dir, mean_name):
+    benchmarks = [200, 400, 600, 800]
+
+    original_speed = {}
+    modified_speed = {}
+
+    for gen,fitness in enumerate(original_mean):
+        for mark in benchmarks:
+            if mark not in original_speed and fitness >= mark:
+                original_speed[mark] = gen + 1
+    
+    for gen,fitness in enumerate(modified_mean):
+        for mark in benchmarks:
+            if mark not in modified_speed and fitness >= mark:
+                modified_speed[mark] = gen + 1
+
+    f = open(f'{output_dir}/speed_comparison_{mean_name.lower()}.txt', 'w')
+    for mark in benchmarks:
+        if mark in original_speed and mark in modified_speed:
+            f.write(f'Original first gen reaching {mark} fitness\t\t: {original_speed[mark]}\n')
+            f.write(f'Modified first gen reaching {mark} fitness\t\t: {modified_speed[mark]}\n')
+            f.write('\n\n')
+
+    f.close()
 
 def _process_results(input_dir):
     results = find_results(input_dir)
@@ -156,12 +189,17 @@ plot_means(all_modified_means, output_dir, test_name)
 _plot_each_single_mean(all_modified_means, output_dir, test_name)
 
 # This is intended to use when I have the original WANN results vs the modified version
-plot_single_mean_versus(all_original_means[1], all_modified_means[1], output_dir, 'Modified Elite', 'Original Elite', 'Elite')
-plot_single_mean_versus(all_original_means[2], all_modified_means[2], output_dir, 'Modified Best', 'Original Best', 'Best')
-plot_single_mean_versus(all_original_means[3], all_modified_means[3], output_dir, 'Modified Peak', 'Original Peak', 'Peak')
-plot_single_mean_versus(all_original_means[4], all_modified_means[4], output_dir, 'Modified Median', 'Original Median', 'Median')
+plot_single_mean_versus(all_original_means[1], all_modified_means[1], output_dir, 'Original Elite', 'Modified Elite', 'Elite')
+plot_single_mean_versus(all_original_means[2], all_modified_means[2], output_dir, 'Original Best', 'Modified Best', 'Best')
+plot_single_mean_versus(all_original_means[3], all_modified_means[3], output_dir, 'Original Peak', 'Modified Peak', 'Peak')
+plot_single_mean_versus(all_original_means[4], all_modified_means[4], output_dir, 'Original Median', 'Modified Median', 'Median')
 
 get_fitness_comparison(all_original_means[1], all_modified_means[1], output_dir, 'Elite')
 get_fitness_comparison(all_original_means[2], all_modified_means[2], output_dir, 'Best')
 get_fitness_comparison(all_original_means[3], all_modified_means[3], output_dir, 'Peak')
 get_fitness_comparison(all_original_means[4], all_modified_means[4], output_dir, 'Median')
+
+get_speed_comparison(all_original_means[1], all_modified_means[1], output_dir, 'Elite')
+get_speed_comparison(all_original_means[2], all_modified_means[2], output_dir, 'Best')
+get_speed_comparison(all_original_means[3], all_modified_means[3], output_dir, 'Peak')
+get_speed_comparison(all_original_means[4], all_modified_means[4], output_dir, 'Median')
