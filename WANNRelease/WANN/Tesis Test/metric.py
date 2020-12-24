@@ -214,9 +214,9 @@ def box_plot(original_gens, modified_gens, output_dir):
             patch.set_facecolor(color)
 
         ax1.set_ylabel('Fitness')
-        ax1.set_xlabel('Algoritmo')
+        ax1.set_xlabel('Algorithm')
         
-        plt.xticks([1, 2,], ['Original', 'Modificado'])
+        plt.xticks([1, 2,], ['Original', 'Modified'])
 
         plt.savefig(f'{output_dir}/boxplot_{info.lower()}.png')
         plt.clf()
